@@ -82,8 +82,11 @@ TASK 5:
        human readable to allow for post-hoc edits.
 """
 
-# Make sure you have: biopython and urllib2 installed in your environment
-# all others are pre-installed
+# Make sure you have: biopython and urllib2 (or urllib3, but still import 
+# urllib2 installed in your environment)
+
+# All others are pre-installed if you're using a conda environment
+
 from Bio.Blast import NCBIWWW, NCBIXML
 from Bio import SeqIO, Entrez, pairwise2
 import collections
@@ -91,8 +94,11 @@ import json
 import time
 import urllib2
 
-### ENTER YOUR INPUT FILE PATH HERE###
-input_filepath = 'your_file_path.json'
+### ENTER YOUR INPUT FILE PATH HERE ###
+# =====================================
+INPUT_FILEPATH = 'your_file_path.json'
+# =====================================
+### ENTER YOUR INPUT FILE PATH HERE ###
 
 def try_efetch(database, identifier, ret_mode, sleepy, \
                         ret_type = 'text'):
