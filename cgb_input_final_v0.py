@@ -1,3 +1,4 @@
+#co-created by: Dr. Ivan Erill and Shane Humphrey
 """
 Reads in a JSON file containing at least five required elements:
 1. Transcription factor (TF)family name 
