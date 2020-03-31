@@ -1,3 +1,59 @@
+#co-creators: Dr. Ivan Erill and Mr. Shane Humphrey
+"""
+Reads in a JSON file containing at least five required elements:
+1. Transcription factor (TF)family name 
+2. NCBI protein identifiers for transcription factors to be studied
+3. Reported TF-binding sites for the proteins. 
+4. input_generator parameters which govern the scope of the BLASTP
+   search for orthologs and the sampling process
+5. cgb_parameters which govern the scope of cgb
+
+Basic operation:
+(1) Using the provided TF protein accession numbers , cgb_input_generator 
+performs a BLASTP search for each TF, limited by e-value and (optionally) 
+by a taxonomic organism ID. (See input_test.md for details)
+
+If no taxonomic ID is specified, BLAST hits will be obtained up to a
+maximum specified e-value (1e-10 by default). If, however,  a taxonomic ID 
+is specified, the BLASTP search will be constrained to that taxon (e.g. class, order...) as
+well as by the specified e-value.
+
+Identified HSPs from BLASTP searches are consolidated into a list of
+unique hits, relative to each other, and to the TFs under study 
+
+# need to finish (2)
+(2) Once HSPs for all TFs have been returned, the next task is to identify 
+and retrieve the 'best' genome record to which the HSP belongs.
+- 'Best' is defined in greater detail in the 
+- To accomplish this, the Identical Protein Group (IPG) report for each HSP is retrieved
+with its protein accession number. 
+- The IPG report contains linked genome records which have been annotated with the
+HSP in their coding sequence (CDS) that codes for the HSP is identified
+from annotated genome records in the IPG report.then identifies all 
+genome records associated with filtered BLASTP hits by prioritizing, 
+, genomic records corresponding to
+complete genome assemblies. In the case of WGS records, it will seek the most
+complete WGS record (longest number of base pairs in the assembly).
+
+(3) once all corresponding genome records have been identified, the script offers
+three distinct operation modes:
+- report only one genome record per taxonomic level indicated by the user (e.g.
+  genus)
+- report only genome records for proteins with pair-wise identities below a
+  threshold provided by the user (e.g. 90% identity) (to be implemented)
+- report all identified genome recordsONCE ALL CORRESPONDING GENOME RECORDS HAVE BEEN IDENTIFIED, THE SCRIPT OFFERS
+THREE DISTINCT OPERATION MODES:
+- REPORT ONLY ONE GENOME RECORD PER TAXONOMIC LEVEL INDICATED BY THE USER (E.G.
+  GENUS)
+- REPORT ONLY GENOME RECORDS FOR PROTEINS WITH PAIR-WISE IDENTITIES BELOW A
+  THRESHOLD PROVIDED BY THE USER (E.G. 90% IDENTITY) (TO BE IMPLEMENTED)
+- REPORT ALL IDENTIFIED GENOME RECORDS
+
+(4) Following the protocol indicated in (3), the script then generates a CGB input
+file using default parameters for the user to edit.
+
+"""
+
 # Make sure you have: biopython and urllib2 installed in your environment
 # all others are pre-installed
 from Bio.Blast import NCBIWWW, NCBIXML
