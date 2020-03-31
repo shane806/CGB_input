@@ -8,7 +8,7 @@ import time
 import urllib2
 
 ### ENTER YOUR INPUT FILE PATH HERE###
-input_filepath = 'yourfilepath.json'
+input_filepath = 'your_file_path.json'
 
 def try_efetch(database, identifier, ret_mode, sleepy, \
                         ret_type = 'text'):
@@ -43,7 +43,6 @@ def try_read_and_efetch(database, identifier, ret_mode, sleepy, \
     within this function, with Entrez.read(), as opposed to being
     read by some other function outside this function.
     """
-    for cnt in range(5):
     for cnt in range(5):
         try:
             record = Entrez.read(Entrez.efetch(db= database, \
@@ -547,7 +546,9 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
     #using it in ESearch
         
     #Download record information from Nucleotide
-    nuc_rec = try_read_and_efetch('nucleotide', nuc_record_acc, 'xml', sleepy)
+    nuc_rec = try_read_and_efetch(database = 'nucleotide', identifier = \
+                                  nuc_record_acc, ret_mode = 'xml', \
+                                  sleepy = sleepy, ret_type = None)
 	
     if nuc_rec == None:
         return None
@@ -580,23 +581,29 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
         # in case more genome records exist. e.g. plasmids not associated with 
         # the complete circular chromosome
         if BioSample_found:
-            Id_List = try_read_and_esearch('nucleotide', BioSample, \
-                                     'acc', sleepy)['IdList']
+            Id_List = try_read_and_esearch(database = 'nucleotide', \
+                                           term_val = BioSample, \
+                                           ID_type = 'acc', \
+                                           sleepy = sleepy)['IdList']
                     
         elif BioProject_found:
             
-            bioP_id_list = try_read_and_esearch('BioSample', BioProject, \
-                                                'acc', sleepy)['IdList']
+            bioP_id_list = try_read_and_esearch(database = 'BioSample', \
+                                                term_val = BioProject, \
+                                                ID_type = 'acc', \
+                                               sleepy = sleepy)['IdList']
                 
 
             if len(bioP_id_list) > 0:
                 for Id in bioP_id_list:
                     
-                    Biosample = Id + '[Biosample]'
+                    BioSample = Id + '[Biosample]'
                     
-                    Id_List = try_read_and_esearch('nucleotide', Biosample, \
-                                                   'acc', sleepy)['IdList']
-												    	  
+                    Id_List = try_read_and_esearch(database = 'nucleotide', \
+                                           term_val = BioSample, \
+                                           ID_type = 'acc', \
+                                           sleepy = sleepy)['IdList']
+                    			    	  
                     if nuc_record_acc in Id_List:
                         break
                     
@@ -845,9 +852,12 @@ def tax_level_filter(selected_taxon, orthologs, sleepy):
         
         # download the nucleotide record with the genome record just obtained
         # from the genome record retrieval function
-        record = try_read_and_efetch('nucleotide', \
+        record = try_read_and_efetch(database = 'nucleotide', \
+                                     identifier = \
                                      orthologs[ortholog]['nuc_record']['acc'],\
-                                         'xml', sleepy)
+                                     ret_mode = 'xml', sleepy = sleepy, \
+                                     ret_type = None)
+            
         if record == None:
 	
             # update remove_list and continue to next ortholog
@@ -871,9 +881,9 @@ def tax_level_filter(selected_taxon, orthologs, sleepy):
     
         # Download the taxonomy file with the tax_id
         taxonomy = try_read_and_efetch(database = 'taxonomy', \
-                                       identifier = 'txid'+ tax_id + \
-				       '[Organism]', 'xml', \
-                                           sleepy)
+                                       identifier = 'txid'+ tax_id + '[Organism]', \
+                                       ret_mode = 'xml', sleepy = sleepy,\
+                                       ret_type = 'xml')
         if taxonomy == None:
             
             # update remove_list and continue to next ortholog
@@ -996,7 +1006,7 @@ def tax_level_filter(selected_taxon, orthologs, sleepy):
                 for target_genome in orthologs[ortholog]['genome']:
                     
                     rec = try_read_and_efetch('nucleotide', target_genome, \
-                                              'xml', sleepy, ret_type='docsum')
+                                              'xml', sleepy, ret_type= None)
                         
                     if rec == None:
 			
@@ -1760,7 +1770,6 @@ def cgb_input(inputfile_name):
         IGPs_checked = input_check(inputfile_name)
     except:
         return None
-    
     user_email = IGPs_checked[0]
     apikey = IGPs_checked[1]
     evalue = IGPs_checked[2]
@@ -1887,7 +1896,7 @@ def cgb_input(inputfile_name):
         # Ensure no repeating accession numbers in the dictionary
         for hit in blast_hits:
             hit = str(hit)
-            if hit not in orthologs:
+            if hit not in orthologs and hit not in TF_accessions:
                 orthologs[hit] = {}
         
     print "\nAll reference protein records in input file pre-processed and BLASTed."
