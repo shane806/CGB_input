@@ -35,22 +35,16 @@ genome records associated with filtered BLASTP hits by prioritizing,
 complete genome assemblies. In the case of WGS records, it will seek the most
 complete WGS record (longest number of base pairs in the assembly).
 
-(3) once all corresponding genome records have been identified, the script offers
+(3) Once all corresponding contig records have been identified, the script offers
 three distinct operation modes:
 - report only one genome record per taxonomic level indicated by the user (e.g.
   genus)
 - report only genome records for proteins with pair-wise identities below a
   threshold provided by the user (e.g. 90% identity) (to be implemented)
-- report all identified genome recordsONCE ALL CORRESPONDING GENOME RECORDS HAVE BEEN IDENTIFIED, THE SCRIPT OFFERS
-THREE DISTINCT OPERATION MODES:
-- REPORT ONLY ONE GENOME RECORD PER TAXONOMIC LEVEL INDICATED BY THE USER (E.G.
-  GENUS)
-- REPORT ONLY GENOME RECORDS FOR PROTEINS WITH PAIR-WISE IDENTITIES BELOW A
-  THRESHOLD PROVIDED BY THE USER (E.G. 90% IDENTITY) (TO BE IMPLEMENTED)
-- REPORT ALL IDENTIFIED GENOME RECORDS
+- report all identified genome records
 
-(4) Following the protocol indicated in (3), the script then generates a CGB input
-file using default parameters for the user to edit.
+(4) Following the protocol indicated in (3), a cgb ready input file is generated
+ and human readability is maintained to allow for post-hoc edits
 
 """
 
