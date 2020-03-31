@@ -43,33 +43,54 @@ Each motif is defined as a dictionary that contains the following items:
 
 ## ``cgb_input_generator`` Input File Parameters **(Needs to be in the `cgb_input_generator` input file)**
 
-1. outputfile_name
-   * A file path, ending with a .json extension which can be directly used to populate CGB upon the  generating the relevant set of genomes         
-
-2. min_cover 
-   * A number between zero and one which represents the number of amino acids used in the alignment, divided by the number of amino acids in the original query sequence.
-   * Used to minimize the risk of false positive BLAST HSPs in the form of domains.
-3. TF_family 
-   * A name for the TF under study
-4. BLAST_eval 
-   * evalue cutoff for NCBI BLASTP
-5. tax_ID 
-   * taxon 'organism' limit for NCBI BLASTP
-6. max_hits
-   * max number of NCBI BLASTP results
-7. selected_taxon 
-   * The highest taxonomic level to sample
-8. up_region
+1. `"BLAST_eval"`
+   * The evalue cutoff for NCBI BLAST search
+     * float value between 0 and 1
+     * default value: `1e-10`
+     * See https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp#expect for more details.
+   
+2. `"BLAST_dbase"`
+   * The database used for NCBI BLAST search
+     * database options: `nr`, `refseq_protein`, `landmark`, `swissprot`, `pataa`, `pdb`, `env_nr`, and `tsa_nr`
+     * default option: `nr`
+3. `"max_hits"`
+   * The max number of BLAST hits (HSPs) returned in NCBI BLAST search for orthologs
+     * integer value between 0 and 500
+     * default value: 50
+     
+4. `"selected_taxon"`
+   * The taxonomic level/rank used to sample genomes on a 'one per' basis (e.g. one genome per genus if `"selected_taxon"` is `genus`)
+     * level/rank options: `species`, `genus`, `family`, `order`, `class`, `phylum`
+     * default option: `null`
+5. `"maxID"`
+   * Represents the maximum identity between promoter sequences in terms of sequence similarity, expressed as a decimal (float)
+6. `"up_region"`
    * The number of upstream bases relative to TLS, used in comparing promoters below a maximum percent ID relative to other promoters in the sample population
-9. dw_region
+7. `"dw_region"`
    * The number of downstream bases relative to TLS, used in comparing promoters below a maximum percent ID relative to other promoters in the sample population
 
-10. maxID 
-   * A number, between 0 and 1, which represents the maximum percent ID used in the pairwise comparison of promoter sequences.
+     * A float value between 0 and 1
+     * default value: `0.8`
+3. `"TF_family"` (**This parameter must have a value entered by the user, otherwise, `cgb_input_generator` will return None**) 
+   * A name for the TF under study expressed as as string
 
-11. sleepy
+
+
+5. tax_ID 
+   * taxon 'organism' limit for NCBI BLASTP
+
+7. 
+
+
+10. min_cover
+   * Represents the number of amino acids used in the alignment, divided by the number of amino acids in the original query sequence.
+   * Used to minimize the risk of false positive BLAST HSPs in the form of domains.
+     * float value between 0 and 1
+     * default value: `0.75`
+10. sleepy
    * Additional sleep time for queries if NCBI returns HTTP error for too many queries
-
+11. outputfile_name
+   * A file path, ending with a .json extension which can be directly used to populate CGB upon the  generating the relevant set of genomes
 
 
 ## ``cgb`` Configuration Parameters **(Needs to be in the `cgb_input_generator` input file)**
