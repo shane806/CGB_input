@@ -18,7 +18,7 @@ Upon completion of a successful input file generation, the resulting JSON file w
    * Each list contains experimentally validated DNA binding sites for the corresponding TF protein, represented as strings. 
    * Each string is a DNA sequence (all uppercase) represented as they're commonly represented: 'ACTG'.
   
-As long as these two fields are present and accurate, ``cgb_input_generator`` can run and return a meaningful result using default values for parameters.
+
 
 3. **A list of ``cgb_input_generator`` parameters**
    * Actually a dictionary, where the key is the name of the parameter, and the value is the specified value for that parameter.
