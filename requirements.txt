@@ -1,3 +1,38 @@
-biopython=1.74
-python=2.7.17
-urllib3=1.25.7
+# This file may be used to create an anconda environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-64
+biopython=1.76=py27h0b31af3_0
+brotlipy=0.7.0=py27h0b31af3_1000
+ca-certificates=2020.4.5.2=hecda079_0
+certifi=2019.11.28=py27h8c360ce_1
+cffi=1.11.5=py27_0
+cryptography=2.8=py27hab9f8d5_2
+enum34=1.1.10=py27h8c360ce_1
+idna=2.9=py_1
+ipaddress=1.0.23=py_0
+libblas=3.8.0=16_openblas
+libcblas=3.8.0=16_openblas
+libcxx=10.0.0=h1af66ff_2
+libedit=3.1.20181209=hb402a30_0
+libffi=3.3=h0a44026_1
+libgfortran=4.0.0=2
+liblapack=3.8.0=16_openblas
+libopenblas=0.3.9=h3d69b6c_0
+llvm-openmp=10.0.0=h28b9765_0
+ncurses=6.2=h0a44026_1
+numpy=1.16.5=py27hde6bac1_0
+openssl=1.1.1g=h0b31af3_0
+pip=20.1.1=pyh9f0ad1d_0
+pycparser=2.20=py_0
+pyopenssl=19.1.0=py_1
+pysocks=1.7.1=py27h8c360ce_1
+python=2.7.18=h47d645e_1
+python_abi=2.7=1_cp27m
+readline=8.0=h1de35cc_0
+setuptools=44.0.0=py27_0
+six=1.15.0=pyh9f0ad1d_0
+sqlite=3.31.1=h5c1f38d_1
+tk=8.6.10=hbbe82c9_0
+urllib3=1.25.9=py_0
+wheel=0.34.2=py_1
+zlib=1.2.11=h0b31af3_1006
