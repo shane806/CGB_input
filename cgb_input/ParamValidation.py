@@ -1,6 +1,6 @@
 from Bio import Entrez
-import NCBI_funcs
 import json, urllib2
+from NCBI_funcs import try_read_and_efetch
 
 
 def input_check(inputfile_name):
@@ -65,12 +65,13 @@ def input_check(inputfile_name):
 
     # Initialize list which will ultimately be the returned object containing
     # all validated parameters for the cgb_input function
-    IGPs_checked = []
+    IGPs_checked = {}
 
     ### *** JSON input file IO *** ###
     try:
 
         with open(inputfile_name, 'r') as path:
+            
             in_file = json.load(path)
 
     # If unsuccessful, grab the raised exception and initialize in new variable
@@ -140,7 +141,7 @@ def input_check(inputfile_name):
 
             print "\n -NCBI account email address:", user_email_checked
 
-            IGPs_checked.append(user_email_checked)
+            IGPs_checked['user_email'] = user_email_checked
 
         else:
 
@@ -194,7 +195,7 @@ def input_check(inputfile_name):
 
         apikey_checked = None
 
-    IGPs_checked.append(apikey_checked)
+    IGPs_checked['apikey'] = apikey_checked
 
     IGPs = in_file['input_parameters']
 
@@ -259,7 +260,7 @@ def input_check(inputfile_name):
         print " -No BLAST_eval parameter in your JSON file. Setting parameter" \
               " to default: 1e-10"
 
-    IGPs_checked.append(BLAST_eval_checked)
+    IGPs_checked['evalue'] = BLAST_eval_checked
 
     ### *** BLAST_dbase check *** ###
     if 'BLAST_dbase' in IGPs:
@@ -324,7 +325,7 @@ def input_check(inputfile_name):
         print "No database specified. Setting BLAST_dbase parameter to " \
               "default: nr"
 
-    IGPs_checked.append(BLAST_dbase_checked)
+    IGPs_checked['blast_db'] = BLAST_dbase_checked
 
     ### *** BLAST max_hits check ***
     if 'max_hits' in IGPs:
@@ -367,7 +368,7 @@ def input_check(inputfile_name):
         print "no max_hits parameter in JSON file. Setting parameter to default" \
             , nhits_checked
 
-    IGPs_checked.append(nhits_checked)
+    IGPs_checked['nhits'] = nhits_checked
 
     ### *** selected_taxon check *** ###
 
@@ -421,8 +422,8 @@ def input_check(inputfile_name):
 
         selected_taxon_checked = None  # default
 
-    IGPs_checked.append(selected_taxon_checked)
-
+    IGPs_checked['selected_taxon'] = selected_taxon_checked
+    
     # if ID_filter was set to True but None given for maxID, set to default
     if 'maxID' in IGPs:
 
@@ -440,7 +441,7 @@ def input_check(inputfile_name):
                 print "\n -Orthologs used in analysis will be less than " \
                       + str(maxID_checked * 100) + "% identical to TFs"
 
-                IGPs_checked.append(maxID_checked)
+                IGPs_checked['maxID'] = maxID_checked
 
             else:
 
@@ -460,7 +461,7 @@ def input_check(inputfile_name):
 
             maxID_checked = 0.8  # default
 
-            IGPs_checked.append(maxID_checked)
+            IGPs_checked['maxID'] = maxID_checked
 
         else:
 
@@ -479,7 +480,7 @@ def input_check(inputfile_name):
 
         maxID_checked = 0.8  # default
 
-        IGPs_checked.append(maxID_checked)
+        IGPs_checked['maxID'] = maxID_checked
 
     ### *** up_region and dw_region checks *** ###
 
@@ -517,7 +518,7 @@ def input_check(inputfile_name):
         print "\n -Setting parameter to default: 250"
         up_region_checked = 250
 
-    IGPs_checked.append(up_region_checked)
+    IGPs_checked['up_region'] = up_region_checked
 
     if 'dw_region' in IGPs:
         if isinstance(IGPs['dw_region'], int):
@@ -525,7 +526,9 @@ def input_check(inputfile_name):
 
             # if dw_region between 10 and 100, validate it, otherwise, return None
             if dw_region >= 0 and dw_region <= 100:
+                
                 dw_region_checked = dw_region
+                
                 print "\n -Number of bases to check in the downstream region: ", \
                     dw_region_checked
 
@@ -554,7 +557,7 @@ def input_check(inputfile_name):
         print "\n -Setting parameter to default: 25"
         dw_region_checked = 25
 
-    IGPs_checked.append(dw_region_checked)
+    IGPs_checked['dw_region'] = dw_region_checked
 
     ### *** tax_ID checks *** ###
     if 'tax_ID' in IGPs:
@@ -580,7 +583,7 @@ def input_check(inputfile_name):
 
             Entrez.apikey = apikey_checked
 
-            tax_ID_check = NCBI_funcs.try_read_and_efetch(database='taxonomy',
+            tax_ID_check = try_read_and_efetch(database='taxonomy',
                                                identifier=tax_ID, ret_mode='xml', sleepy=.5,
                                                ret_type='text')
             if len(tax_ID_check) == 0:
@@ -593,7 +596,7 @@ def input_check(inputfile_name):
             else:
                 tax_ID_checked = tax_ID
 
-                IGPs_checked.append(tax_ID_checked)
+                IGPs_checked['tax_ID'] = tax_ID_checked
 
                 print "\n -BLAST results will be restricted to those within the group" \
                       " specified by taxonomic identifier: ", tax_ID_checked
@@ -601,9 +604,12 @@ def input_check(inputfile_name):
         # if tax_ID set to None, validate the default
         elif IGPs['tax_ID'] == None:
             tax_ID_checked = None
+
             print "\n -The tax_ID parameter set to null in your JSON file."
+
             print "\n -BLAST results will not be restricted to any taxonomic group."
-            IGPs_checked.append(tax_ID_checked)
+
+            IGPs_checked['tax_ID'] = tax_ID_checked
 
         # if not the right type, return None
         else:
@@ -619,7 +625,7 @@ def input_check(inputfile_name):
 
         tax_ID_checked = None
 
-        IGPs_checked.append(tax_ID_checked)
+        IGPs_checked['tax_ID'] = tax_ID_checked
 
     ### *** min_cover check *** ###
     if 'min_cover' in IGPs:
@@ -666,7 +672,7 @@ def input_check(inputfile_name):
         print "\n -No min_cover parameter in your JSON file."
         print "\n -Setting parameter to default: 0.75"
         min_cover_checked = 0.75
-    IGPs_checked.append(min_cover_checked)
+    IGPs_checked['min_cover'] = min_cover_checked
 
     ### *** sleepy check *** ###
     if 'sleepy' in IGPs:
@@ -715,7 +721,7 @@ def input_check(inputfile_name):
 
         print "\n -Setting parameter to default: 0.5 seconds"
 
-    IGPs_checked.append(sleepy_checked)
+    IGPs_checked['sleepy'] = sleepy_checked
 
     ### *** TF_family checks *** ###
     if 'TF_family' in IGPs:
@@ -724,25 +730,27 @@ def input_check(inputfile_name):
 
             TF_family_checked = str(IGPs['TF_family'])
 
-            print "\n -TF family: " + TF_family_checked
-
-            IGPs_checked.append(TF_family_checked)
 
         else:
 
             print "\nThe 'TF_family' parameter reflects a name for the TF to be " \
-                  "analyzed, which should contain a string type. Update your JSON file " \
-                  "such that it falls within this constraint."
+                  "analyzed. Given the absence of a user provided parameter, "\
+                  "The default,'None', will be used"
+        
+            TF_family_checked = None
 
-            return None
 
     else:
 
-        print "For this program to work effectively, their must be a name for " \
-              "your TF to be analyzed, please update your input parameters to " \
-              "include a key, 'TF_family', and its value should be the name."
+        print "\nThe 'TF_family' parameter reflects a name for the TF to be " \
+              "analyzed. Given the absence of a user provided parameter, "\
+              "The default,'None', will be used"
+        
+        TF_family_checked = None
 
-        return None
+    print "\n -TF family: " + TF_family_checked
+
+    IGPs_checked['TF_family'] = TF_family_checked
 
     ### *** outputfile_name checks *** ###
     if 'outputfile_name' in IGPs:
@@ -785,21 +793,22 @@ def input_check(inputfile_name):
 
         outputfile_name_checked = "cgb_input_generated.json"
 
-    IGPs_checked.append(outputfile_name_checked)
+    IGPs_checked['outputfile_name'] = outputfile_name_checked
 
     # Finally, add the CGB_parameters dict, a list of reference protein
     # accession numbers, and the whole 'motifs' object in the input file
-    IGPs_checked.append(CGB_parameters)
+    IGPs_checked['cgb_parameters'] = CGB_parameters
 
     TF_accessions = []
 
     for acc in in_file['motifs']:
+        
         TF_accessions.append(acc['protein_accession'])
 
-    IGPs_checked.append(TF_accessions)
+    IGPs_checked['TF_accessions'] = TF_accessions
 
     motif_object = in_file['motifs']
 
-    IGPs_checked.append(motif_object)
+    IGPs_checked['motif_object'] = motif_object
 
     return IGPs_checked

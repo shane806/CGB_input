@@ -94,7 +94,11 @@ def try_read_and_esearch(database, term_val, ID_type, sleepy):
     return record
 
 
-def try_qblastp(dbase, protseq, cutoff, nhits, sleepy, tax_id=None):
+def try_qblastp(db, seq, e_val, nhits, sleepy, tax_id=None):
+    """
+    Implements the NCBIWWW.qblast function according to the specific needs
+    of the cgb_input program
+    """
     # if taxon filtering
     if tax_id:
 
@@ -106,10 +110,10 @@ def try_qblastp(dbase, protseq, cutoff, nhits, sleepy, tax_id=None):
             try:
 
                 handleresults = NCBIWWW.qblast(program='blastp',
-                                               database=dbase,
-                                               sequence=protseq,
+                                               database=db,
+                                               sequence=seq,
                                                entrez_query=taxon,
-                                               expect=cutoff, hitlist_size=nhits)
+                                               expect=e_val, hitlist_size=nhits)
 
                 time.sleep(sleepy)
                 break
@@ -128,8 +132,8 @@ def try_qblastp(dbase, protseq, cutoff, nhits, sleepy, tax_id=None):
             try:
                 # perform BLASTP search and parse results
                 handleresults = NCBIWWW.qblast(program='blastp',
-                                               database=dbase,
-                                               sequence=protseq, expect=cutoff,
+                                               database=db,
+                                               sequence=seq, expect=e_val,
                                                hitlist_size=nhits)
 
                 time.sleep(sleepy)
@@ -204,7 +208,7 @@ def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy, 
 
                 else:
 
-                    log_file[record.hit_id.split('|')[-2]] = 'blast hit failed' \
+                    log_file[record.hit_id.split('|')[-2]] = 'hit failed'\
                                                              ' coverage test'
 
             else:

@@ -1,5 +1,5 @@
 from Bio import Entrez
-import NCBI_funcs
+from NCBI_funcs import try_read_and_efetch, try_read_and_esearch
 import json
 
 def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
@@ -18,7 +18,7 @@ def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
     genome_ret_dir = log_dir + 'genome_record_retrieval.json'
     
     # Attempt to download the ortholog's IPG record
-    records = NCBI_funcs.try_read_and_efetch('protein', ortholog_acc, 'ipg', sleepy, 'xml')
+    records = try_read_and_efetch('protein', ortholog_acc, 'ipg', sleepy, 'xml')
 
     if not records:
         
@@ -180,7 +180,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
     # using it in ESearch
 
     # Download record information from Nucleotide
-    nuc_rec = NCBI_funcs.try_read_and_efetch(database='nucleotide',
+    nuc_rec = try_read_and_efetch(database='nucleotide',
                                   identifier=nuc_record_acc,
                                   ret_type=None, sleepy=sleepy,
                                   ret_mode='xml')
@@ -224,14 +224,14 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
         # the complete circular chromosome
         if BioSample_found:
 
-            Id_List = NCBI_funcs.try_read_and_esearch(database='nucleotide',
+            Id_List = try_read_and_esearch(database='nucleotide',
                                            term_val=BioSample,
                                            ID_type='acc',
                                            sleepy=sleepy)['IdList']
 
         elif BioProject_found:
 
-            bioP_id_list = NCBI_funcs.try_read_and_esearch(database='BioSample',
+            bioP_id_list = try_read_and_esearch(database='BioSample',
                                                 term_val=BioProject,
                                                 ID_type='acc',
                                                 sleepy=sleepy)['IdList']
@@ -242,7 +242,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
                     BioSample = Id + '[Biosample]'
 
-                    Id_List = NCBI_funcs.try_read_and_esearch(database='nucleotide',
+                    Id_List = try_read_and_esearch(database='nucleotide',
                                                    term_val=BioSample,
                                                    ID_type='acc',
                                                    sleepy=sleepy)['IdList']

@@ -37,11 +37,11 @@ def genome_record_to_seq(grecord, upstream, downstream, sleepy):
 
             print 'NCBI exception raised. Reattempt iteration: ' + str(cnt + 1)
 
-        if cnt == 4 and not net_handle:
-            print 'Could not download record after 5 attempts'
-
-            return None
-
+            if cnt == 4:
+                print 'Could not download record after 5 attempts'
+    
+                return None
+    
     gnome_record = SeqIO.read(net_handle, "fasta")
 
     time.sleep(sleepy)
@@ -59,10 +59,10 @@ def id_below_maxid_perc(el1, el2, max_percent_id):
     al = pairwise2.align.globalms(el1.seq, el2.seq, 2, 0, -2, -.5, \
                                   one_alignment_only=True, \
                                   penalize_end_gaps=False)
-
+    
     matches = 0
     gapless = 0
-
+    
     # for each position in the alignment
     for ch_pair in zip(al[0][0], al[0][1]):
 
@@ -73,10 +73,11 @@ def id_below_maxid_perc(el1, el2, max_percent_id):
 
             # if it's a match, count it
             if ch_pair[0] == ch_pair[1]:
+                
                 matches = matches + 1
 
     perID = (float(matches) / float(gapless))
-    print perID
+    
     # return true or false depending on percent identity
     if perID <= float(max_percent_id):
 
