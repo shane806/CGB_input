@@ -1,0 +1,8 @@
+name: create_input
+channels:
+  - conda-forge
+  - source
+dependencies:
+  - biopython=1.76
+  - python=2.7
+  - urllib3=1.25
