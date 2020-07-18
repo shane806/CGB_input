@@ -443,6 +443,9 @@ def cgb_input_main(inputfile_name):
     # if restricting by maxID
     log_maxID = {}
 
+    with open(log_file_directory+'tax_filtered_orthologs.json') as f:
+        filtered_orthologs = json.load(f)
+
     if maxID:
         
         cnt_pre_maxID = len(filtered_orthologs)
@@ -454,9 +457,15 @@ def cgb_input_main(inputfile_name):
         
         with open(log_file_directory + 'maxID_filtered_orthologs.json', 'w') as f:
         	json.dump(filtered_orthologs_final, f, indent=2)
-        
+
+        for ortholog in filtered_orthologs:
+
+            if ortholog not in filtered_orthologs_final:
+
+                log_maxID[ortholog] = filtered_orthologs[ortholog]
+
         rem_by_maxID = len(filtered_orthologs) - len(filtered_orthologs_final)
-                
+
         num_log['orthologs removed by maxID filter'] = rem_by_maxID
 
         num_log['orthologs remaining after maxID filter'] = \
@@ -466,7 +475,7 @@ def cgb_input_main(inputfile_name):
 
         with open(max_ID_log, 'w') as f:
 
-            json.dump(log_maxID, f, indent=2)
+            json.dump(log_maxID, f, indent=4)
 
     # if all orthologs are wanted, without further study:
     else:
