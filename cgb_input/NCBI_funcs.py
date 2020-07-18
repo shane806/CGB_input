@@ -215,17 +215,6 @@ def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy, 
 
                 orthologs.append(record.hit_id.split('|')[-2])
 
-    blast_log = log_dir + '/BLAST_log_file.json'
-
-    blast_hits = log_dir + '/blast_hits.json'
-
-    with open(blast_hits, 'w') as f:
-
-        json.dump(orthologs, f, indent=2)
-
-    with open(blast_log, 'w') as f:
-
-        json.dump(log_file, f, indent=2)
 
     return orthologs, log_file
 

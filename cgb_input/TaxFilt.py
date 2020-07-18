@@ -2,7 +2,14 @@ from NCBI_funcs import try_read_and_efetch
 from Bio import Entrez
 import time, json
 
-def filter(selected_taxon, orthologs, sleepy, log):
+# log = 'log_files/LexA_logs/'
+# with open(log + 'orthologs.json') as f:
+# 	orthologs = json.load(f)
+# 
+# selected_taxon = 'species'
+# sleepy = .5
+
+def tax_filter(selected_taxon, orthologs, sleepy, log):
     """
     This function takes in the current dictionary of valid orthologs
     (orthologs), the taxonomic level the user wants to sample by
@@ -32,7 +39,9 @@ def filter(selected_taxon, orthologs, sleepy, log):
     the object returned by the function
     """
     tax_log_file = {}
+
     selected_names = []
+
     for ortholog in orthologs:
     
         # download the nucleotide record with the genome record just obtained
@@ -57,7 +66,6 @@ def filter(selected_taxon, orthologs, sleepy, log):
         # loop through features until a 'key: value' pair which value starts
         # with 'taxon'. Split the at the ':' , and the remaining element is the
         # taxonomic identifier
-    
         for quals in features['GBFeature_quals']:
     
             if quals['GBQualifier_value'].split(':')[0] == 'taxon':
@@ -104,7 +112,8 @@ def filter(selected_taxon, orthologs, sleepy, log):
             
             orthologs[ortholog]['taxonomy'] = selected_name
             
-            
+            print 'The ' + selected_taxon + ' for ' + ortholog\
+                + ' is ' + selected_name
         else:
     
             for taxon_rank in taxon_record[0]['LineageEx']:
@@ -116,8 +125,9 @@ def filter(selected_taxon, orthologs, sleepy, log):
                     orthologs[ortholog]['taxonomy'] = selected_name
                     
                     print 'The ' + selected_taxon + ' for ' + ortholog\
-                        + ' is ' + selected_name
-        
+						+ ' is ' + selected_name
+
+        # update orthologs dictionary with the taxonomy
         if orthologs[ortholog]['taxonomy']:
             
             selected_names.append(selected_name)
@@ -128,22 +138,20 @@ def filter(selected_taxon, orthologs, sleepy, log):
             
             tax_log_file[ortholog] = 'lacks necessary taxonomic data'
 
-        selected_names = list(set(selected_names))
-    
-    
-    
+	selected_names = list(set(selected_names))
+
+    print '\nThere are ' + str(len(selected_names)) + ' unique taxonomic groups:'
+
     for ortholog in tax_log_file:
         
         if ortholog in orthologs:
             
             del orthologs[ortholog]
-    
+
     # phase_3 starting here: The filtering process
     # organize the remaining orthologs by unique taxonomic groups
     # i.e. if selected_taxon = 'species', organize orthologs by different
     # species
-    
-    # update orthologs dictionary with the taxonomy
     
     # The following code is where the filtering process actually starts.
     # There will likely be records in orthologs which have the same
@@ -153,7 +161,6 @@ def filter(selected_taxon, orthologs, sleepy, log):
     # the level of selected_taxon, and repeated instances of the SAME
     # taxonomic classification are added to a list which will be sorted
     # by best genome record score
-    print '\nThere are ' + str(len(selected_names)) + ' unique taxonomic groups:'
 
     taxon_groups = {}
     
@@ -174,7 +181,7 @@ def filter(selected_taxon, orthologs, sleepy, log):
     selected_orthologs = []
     
     # select one genome from each group:
-    # choose a complete one if available, or the longest WGS otherwise
+    # choose a complete genome if available, or the longest WGS otherwise
     for group in taxon_groups:
         
         print '\nProcessing group: ' + str(group)
@@ -187,6 +194,7 @@ def filter(selected_taxon, orthologs, sleepy, log):
     
             # first choose best priorization score
             if orthologs[ortholog]['genome_score'] > best_priority_score:
+            
                 best_priority_score = orthologs[ortholog]['genome_score']
                 
     
@@ -206,8 +214,8 @@ def filter(selected_taxon, orthologs, sleepy, log):
         # (the first in the list)
         if len(potential_selected) < 2:
 
-
             final_selected = potential_selected[0]
+            
             print '\n-->Best score for: ' + group + ' = ' + \
                 str(best_priority_score) + ', from record: ' +\
                     final_selected
@@ -222,6 +230,12 @@ def filter(selected_taxon, orthologs, sleepy, log):
             final_selected = potential_selected[0]
             
             selected_orthologs.append(final_selected)
+			
+            print '\nMultiple complete genomes for ' + str(group)
+
+            print '\nFirst genome in list selected: ' + potential_selected[0]
+
+            print 'Others in ' + str(group) + ' discarded.'
 
             for ortholog in taxon_groups[group]:
                 
@@ -231,6 +245,7 @@ def filter(selected_taxon, orthologs, sleepy, log):
                         ' for ' + str(group) + '. First genome in list '\
                         'selected. This genome and others in ' \
                         + str(group) + ' discarded.'
+                        
             
             continue
                 
@@ -278,6 +293,7 @@ def filter(selected_taxon, orthologs, sleepy, log):
                                 max_len = current_len
             
                                 final_selected = ortholog
+
                         except:
                             
                             genome_fail_cnt += 1
@@ -308,6 +324,10 @@ def filter(selected_taxon, orthologs, sleepy, log):
                     tax_log_file[ortholog] = 'cumulative genome length shorter'\
                         ' than longest genome for group: ' + group
     
+    tax_log_file["number of unique " + str(selected_taxon) + " 's"] = len(selected_names)
+    
+    tax_log_file["All unique " + str(selected_taxon) +"'s"] = selected_names
+    
     filt_orthologs = {}
     
     for ortholog in selected_orthologs:
@@ -317,7 +337,11 @@ def filter(selected_taxon, orthologs, sleepy, log):
     taxon_level_filter_log = log + 'taxonomic_filter_log.json'
     
     with open(taxon_level_filter_log, 'w') as f:
-        json.dump(tax_log_file, f, indent=2)
+        json.dump(tax_log_file, f, indent=4)
+        
+    with open(log + 'tax_filtered_orthologs.json', 'w') as f:
+    	json.dump(filt_orthologs, f, indent=4)
 
     return filt_orthologs
 
+# filt_orthologs = tax_filter(selected_taxon, orthologs, .5, log)

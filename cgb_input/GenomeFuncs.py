@@ -15,13 +15,15 @@ def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
     """
     log_file = {}
     
-    genome_ret_dir = log_dir + 'genome_record_retrieval.json'
+    # genome_ret_dir = log_dir + 'genome_record_retrieval.json'
     
     # Attempt to download the ortholog's IPG record
     records = try_read_and_efetch('protein', ortholog_acc, 'ipg', sleepy, 'xml')
 
     if not records:
         
+        # log_file[ortholog_acc] = 'genome retrieval: efetch of IPG record failed'
+
         return None
 
     # create scoring for priorization for non-complete genomes:
@@ -129,10 +131,8 @@ def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
                                   "IPGReport"
         log_file[ortholog_acc] = 'from genome_record_retrieval: no IPGReport'
 
-        with open(genome_ret_dir, 'w') as f:
-            json.dump(log_file, f, indent=2)
-
         return None
+
 
 def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
     """
@@ -189,10 +189,10 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
         log_file[nuc_record_acc] = "initial nucleotide record couldn't be " \
                                    "retrieved by efetch"
-                                   
+                        
         return None
 
-    sp_name = prettyeze_spname(nuc_rec[0]['GBSeq_definition'])
+    sp_name = prettyeze_spname(nuc_rec[0]['GBSeq_organism'])
 
     # if nuc_rec is part of a complete genome record (p_score >= 6), we need
     # to see if there are any plasmids or other unique genome records associated
@@ -201,13 +201,20 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
     # not in nuc_rec, or the search yields zero results, we just use the
     # record obtained in genome_record_retrieval
     if nuc_record_score >= 6:
-
+        
+        Assembly_found = False
         BioSample_found = False
         BioProject_found = False
 
         for element in nuc_rec[0]["GBSeq_xrefs"]:
 
-            if "BioSample" in element["GBXref_dbname"]:
+            if element["GBXref_dbname"] == "Assembly":
+            
+                Assembly_found = True
+                
+                Assembly = element['GBXref_id'] + "[Assembly]"
+            
+            elif  element["GBXref_dbname"] == "BioSample":
 
                 BioSample_found = True
 
@@ -222,7 +229,15 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
         # in case more genome records exist. e.g. plasmids not associated with
         # the complete circular chromosome
-        if BioSample_found:
+        
+        if Assembly_found:
+
+            Id_List = try_read_and_esearch(database='nucleotide',
+                                           term_val=Assembly,
+                                           ID_type='acc',
+                                           sleepy=sleepy)['IdList']
+
+        elif BioSample_found:
 
             Id_List = try_read_and_esearch(database='nucleotide',
                                            term_val=BioSample,
@@ -236,7 +251,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
                                                 ID_type='acc',
                                                 sleepy=sleepy)['IdList']
 
-            if len(bioP_id_list):
+            if bioP_id_list:
 
                 for Id in bioP_id_list:
 
@@ -253,32 +268,27 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
                     else:
 
-                        print '*** Warning: attempt to get all genomes from ' \
-                              'BioProject database for ', nuc_record_acc, \
-                            'unsuccessful; using only the nucleotide ' \
-                            'accession identified through genome retrieval.'
-
-                        return sp_name, nuc_record_acc
+                        print '***Attempt to get all genomes for ' +\
+                               nuc_record_acc + ' proved unsuccessful; Ortholog will be'\
+                                   ' discarded'
+    
+                        return sp_name, None
 
             else:
 
-                print '*** Warning: attempt to get all genomes from ' \
-                      'BioProject database for ' + nuc_record_acc + \
-                      ' unsuccessful; using only the nucleotide accession' \
-                      ' identified through genome retrieval.'
+                print '***Attempt to get all genomes for ' +\
+                       nuc_record_acc + ' proved unsuccessful; Ortholog will be'\
+                           ' discarded'
 
-                return sp_name, nuc_record_acc
+                return sp_name, None
 
         else:
 
-            print '*** Warning: attempt to get all genomes from either ' \
-                  'BioProject or BioSample Databasaes for ' + \
-                  nuc_record_acc + ' proved unsuccessful; using only the ' \
-                                   'nucleotide accession identified through genome ' \
-                                   'retrieval.'
+            print '***Attempt to get all genomes for ' +\
+                   nuc_record_acc + ' proved unsuccessful; Ortholog will be'\
+                       ' discarded'
 
-            # return only the accession, as it was given
-            return sp_name, nuc_record_acc
+            return sp_name, None
 
         # Check genome records returned in Id_list. If the original genome record
         # is a refseq record, grab only refseq records. If the original
@@ -286,19 +296,17 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
         contigs = []
 
-        for nuc_rec in Id_List:
+        for nuc_record in Id_List:
 
-            if refseq == True and '_' in nuc_rec:
+            if refseq == True and '_' in nuc_record:
 
-                contigs.append(nuc_rec)
+                contigs.append(nuc_record)
 
-                return sp_name, contigs
+            elif '_' not in nuc_record:
 
-            elif '_' not in nuc_rec:
+                contigs.append(nuc_record)
 
-                contigs.append(nuc_rec)
-
-                return sp_name, contigs
+        return sp_name, contigs
 
     # for WGS records:
 
@@ -325,7 +333,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
             try:
 
                 handle = Entrez.efetch(db="nucleotide", id=master_record_acc, \
-                                       retmode='xml', rettype=None)
+                                       rettype=None, retmode='xml')
 
             except:
 
