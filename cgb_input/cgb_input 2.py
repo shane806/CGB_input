@@ -1,11 +1,11 @@
 from Bio import SeqIO, Entrez
 import collections, json, time
-from NCBI_funcs import blast_search
-from GenomeFuncs import prettyeze_spname, genome_record_retrieval, contig_accessions
-from TaxFilt import tax_filter
-from ParamValidation import input_check
-from MaxIDFuncs import maxID_filt
-from MkLogDirs import make_log_directories
+from .NCBI_funcs import blast_search
+from .GenomeFuncs import prettyeze_spname, genome_record_retrieval, contig_accessions
+from .TaxFilt import tax_filter
+from .ParamValidation import input_check
+from .MaxIDFuncs import maxID_filt
+from .MkLogDirs import make_log_directories
 
 
 def cgb_input_main(inputfile_name):
@@ -60,7 +60,7 @@ def cgb_input_main(inputfile_name):
 
     except:
 
-        print 'input check fail'
+        print('input check fail')
 
         return None
 
@@ -118,7 +118,7 @@ def cgb_input_main(inputfile_name):
     output = collections.OrderedDict([("TF", TF_family), ("motifs", []),
                                       ("genomes", [])])
 
-    for key, val in cgb_pipeline_parameters.iteritems():
+    for key, val in cgb_pipeline_parameters.items():
         output[key] = val
 
     # create dictionary that will store information about the orthologs,
@@ -150,15 +150,15 @@ def cgb_input_main(inputfile_name):
 
             except:
 
-                print 'NCBI exception raised.\n Reattempt iteration: ' + \
-                      str(cnt + 1)
+                print('NCBI exception raised.\n Reattempt iteration: ' + \
+                      str(cnt + 1))
 
                 if cnt == 4:
-                    print '\n***Warning: Check reference TF accession: ' + \
-                          item['protein_accession']
+                    print('\n***Warning: Check reference TF accession: ' + \
+                          item['protein_accession'])
 
-                    print '\nUnable to retrieve record through Entrez after' \
-                          ' 5 attempts'
+                    print('\nUnable to retrieve record through Entrez after' \
+                          ' 5 attempts')
 
                     continue
 
@@ -172,12 +172,12 @@ def cgb_input_main(inputfile_name):
 
             else:
 
-                print '***Warning: Check the accession: ' + \
-                      item['protein_accession']
+                print('***Warning: Check the accession: ' + \
+                      item['protein_accession'])
 
-                print '***Could not access its genome file!'
+                print('***Could not access its genome file!')
 
-                print '*** might be missing the version number (e.g. xxxx.1)'
+                print('*** might be missing the version number (e.g. xxxx.1)')
 
                 skipprot = True
 
@@ -203,13 +203,13 @@ def cgb_input_main(inputfile_name):
 
             except:
 
-                print 'NCBI exception raised. Reattempt iteration: ' + str(cnt + 1)
+                print('NCBI exception raised. Reattempt iteration: ' + str(cnt + 1))
 
                 if cnt == 4:
                     log_file[item['protein_accession']] = 'Reference TF fail on ' \
                                                           '"get name" efetch'
 
-                    print 'Could not download record after 5 attempts'
+                    print('Could not download record after 5 attempts')
 
                     skipprot = True
 
@@ -225,7 +225,7 @@ def cgb_input_main(inputfile_name):
         # organism name
         TF_name = TF_family + '_' + name
 
-        print '\nProcessing: ' + TF_name
+        print('\nProcessing: ' + TF_name)
 
         # TF_accession (item['protein_accession]), TF_name, TF_genome, and
         # binding sites (item['sites']) are compiled into a dictionary, then
@@ -240,20 +240,13 @@ def cgb_input_main(inputfile_name):
     # BLAST search is performed using the blast_search function.
     # each hit stored in a dictionary called orthologs as keys with an empty
     # dictionary as its value
-
-    # create log file paths for each function where an ortholog could
-    # possibly be thrown out (other than taxon filtering, which handles
-    # that within the function itself)
     blast_log_dir = log_file_directory + 'BLAST_log_file.json'
 
     blast_hit_log = log_file_directory + 'blast_hits.json'
 
-    gen_ret_dir = log_file_directory + 'genome_retrieval_log.json'
-
-    contig_log_dir = log_file_directory + 'contig_accessions_log.json'
     for accession in TF_accessions:
 
-        print '\nBLASTing: ' + accession
+        print('\nBLASTing: ' + accession)
 
         blast_hits, blast_log = blast_search(accession, blast_db,
                                              evalue, nhits,
@@ -273,22 +266,21 @@ def cgb_input_main(inputfile_name):
 
     with open(blast_hit_log, 'w') as f:
 
-        json.dump(blast_hits_final, f, indent=4)
+        json.dump(blast_hits_final, f, indent=2)
 
     with open(blast_log_dir, 'w') as f:
 
-        json.dump(log_file, f, indent=4)
+        json.dump(log_file, f, indent=2)
 
-    print "\nAll reference protein records in input file pre-processed" \
-          " and BLASTed."
+    print("\nAll reference protein records in input file pre-processed" \
+          " and BLASTed.")
 
     num_log = collections.OrderedDict()
 
     orth_start_num = len(orthologs)
 
     num_log['hits before processing'] = orth_start_num
-
-    print orth_start_num, 'hits before processing'
+    print(orth_start_num, 'hits before processing')
 
     # THIRD LOOP: work with orthologs (targets)
     # For each ortholog, we want to pick one genome (from the IPG record of that
@@ -298,9 +290,12 @@ def cgb_input_main(inputfile_name):
 
     toberemoved = []
 
+    gen_ret_dir = log_file_directory + 'genome_retrieval_log.json'
+    contig_log = log_file_directory + 'contig_accessions_log.json'
+
     for ortholog in orthologs:
 
-        print '\nProt: ' + ortholog
+        print('\nProt: ' + ortholog)
 
         # use the function `genome_record_retrieval` to get the best selected
         # encoding for the TF ortholog identified by BLASTP
@@ -318,8 +313,8 @@ def cgb_input_main(inputfile_name):
 
             try:
 
-                print '     Genome: ' + cds_accession['acc'] + ' with score: ' + \
-                      str(cds_accession['p_score'])
+                print('     Genome: ' + cds_accession['acc'] + ' with score: ' + \
+                      str(cds_accession['p_score']))
 
                 target_name, target_range = contig_accessions(
                     cds_accession['acc'], cds_accession['p_score'], sleepy)
@@ -337,8 +332,8 @@ def cgb_input_main(inputfile_name):
             if not target_range:
                 toberemoved.append(ortholog)
 
-                contigs_log[ortholog] = 'from contig_accessions ' \
-                                        '(returned None for target range)'
+                log_file[ortholog] = 'from contig_accessions ' \
+                                     '(function returned None for target range)'
 
             # store the genomic cds data, contigs, p_score, and name in
             # orthologs
@@ -356,6 +351,19 @@ def cgb_input_main(inputfile_name):
     # gen_ret_cnt, contig_cnt, other_cnt = 0, 0, 0
 
     for ortholog in toberemoved:
+        # if log_file[ortholog] == 'from genome retrieval':
+
+        #     gen_ret_cnt += 1
+
+        # elif log_file[ortholog].startswith('from contig_accessions'):
+
+        #     contig_cnt += 1
+
+        # else:
+
+        #     other_cnt += 1
+
+        # remove orthologs that did not pan out
         del orthologs[ortholog]
 
     orth_dir_prefilt = log_file_directory + 'orthologs.json'
@@ -363,11 +371,8 @@ def cgb_input_main(inputfile_name):
     post_contigs_cnt = len(orthologs)
 
     coverage_cnt = 0
-
     non_unique = 0
-
     for hit in blast_log:
-    
         if blast_log[hit] == 'hit failed coverage test':
             coverage_cnt += 1
         else:
@@ -381,21 +386,15 @@ def cgb_input_main(inputfile_name):
 
     num_log['orthologs removed in genome retrieval'] = len(gen_ret_log)
 
-    num_log['orthologs removed in contig accessions'] = len(contigs_log)
+    num_log['orthologs removed in contig accessions'] = len(contig_log)
 
     with open(orth_dir_prefilt, 'w') as f:
 
-        json.dump(orthologs, f, indent=4, separators=(',', ': '))
-
-    with open(gen_ret_dir, 'w') as f:
-        json.dump(gen_ret_log, f, indent=4)
-
-    with open(contig_log_dir, 'w') as f:
-        json.dump(contigs_log, f, indent=4)
+        json.dump(orthologs, f, indent=2, separators=(',', ': '))
 
     cnt_lost_pre_TaxFilt = orth_start_num - post_contigs_cnt
 
-    print '\nTotal number of valid orthologs detected: ' + str(post_contigs_cnt)
+    print('\nTotal number of valid orthologs detected: ' + str(post_contigs_cnt))
 
     num_log['orthologs remaining after contig accessions, before filtering'] = len(orthologs)
     # This control flow (Beginning here and continuing through the next if/else
@@ -415,13 +414,7 @@ def cgb_input_main(inputfile_name):
         filtered_orthologs = tax_filter(selected_taxon, orthologs, sleepy,
                                         log_file_directory)
 
-        with open(log_file_directory + 'tax_filtered_orthologs.json', 'w') as f:
-            json.dump(filtered_orthologs, f, indent=4)
-
         cnt_post_TaxFilt = len(filtered_orthologs)
-
-        print str(cnt_post_TaxFilt) + ' orthologs remaining after taxon filtering by ' + \
-              selected_taxon
 
         cnt_lost_post_TaxFilt = post_contigs_cnt - cnt_post_TaxFilt
 
@@ -437,35 +430,30 @@ def cgb_input_main(inputfile_name):
 
     # if restricting by maxID
     log_maxID = {}
-
     if maxID:
 
         cnt_pre_maxID = len(filtered_orthologs)
 
         num_log['orthologs before maxID filtering'] = cnt_pre_maxID
 
-        filtered_orthologs_final = maxID_filt(maxID, filtered_orthologs, up_region,
-                                              dw_region, sleepy, log_file_directory)
+        filtered_list = maxID_filt(maxID, filtered_orthologs, up_region,
+                                   dw_region, sleepy)
 
-        rem_by_maxID = len(filtered_orthologs) - len(filtered_orthologs_final)
+        filtered_orthologs_final = {}
 
-        remove_maxID = []
+        rem_by_maxID = 0
         for ortholog in filtered_orthologs:
-	
-            if ortholog not in filtered_orthologs_final:
-                log_maxID[ortholog]['nuc_record'] =filtered_orthologs[ortholog]\
-                    ['nuc_record']
 
-                log_maxID[ortholog]['genome_score'] =filtered_orthologs\
-                    [ortholog]['genome_score']
-                  
+            if ortholog in filtered_list:
 
-                log_maxID[ortholog]['genome_name']=filtered_orthologs\
-                    [ortholog]['genome_name']
+                filtered_orthologs_final[ortholog] = filtered_orthologs[ortholog]
 
-                log_maxID[ortholog]['taxonomy']=filtered_orthologs\
-                    [ortholog]['taxonomy']
-                
+            else:
+
+                rem_by_maxID += 1
+
+                log_maxID[ortholog] = 'maxID filter'
+
         num_log['orthologs removed by maxID filter'] = rem_by_maxID
 
         num_log['orthologs remaining after maxID filter'] = \
@@ -475,18 +463,30 @@ def cgb_input_main(inputfile_name):
 
         with open(max_ID_log, 'w') as f:
 
-            json.dump(log_maxID, f, indent=4)
+            json.dump(log_maxID, f, indent=2)
 
     # if all orthologs are wanted, without further study:
     else:
 
         filtered_orthologs_final = filtered_orthologs
 
+    other_cnt = 0
+    for ortholog in orthologs:
+
+        if ortholog not in filtered_orthologs_final:
+
+            if ortholog not in log_file and ortholog not in log_maxID:
+                other_cnt += 1
+
+                log_file[ortholog] = 'other/reason unclear'
+
+    num_log['other'] = other_cnt
+
     num_dir = log_file_directory + 'num_log.json'
 
     with open(num_dir, 'w') as f:
 
-        json.dump(num_log, f, indent=4)
+        json.dump(num_log, f, indent=2, separators=(',', ': '))
 
     for ortholog in filtered_orthologs_final:
         target = {"name": filtered_orthologs_final[ortholog]['genome_name'],
@@ -494,20 +494,20 @@ def cgb_input_main(inputfile_name):
 
         output["genomes"].append(target)
 
-    print '\nTotal number of valid orthologs after filtering', \
-        len(output['genomes'])
+    print('\nTotal number of valid orthologs after filtering', \
+          len(output['genomes']))
 
     # write out the json file
-    print '\nWriting out JSON input file for CGB'
+    print('\nWriting out JSON input file for CGB')
 
     with open(outputfile, "w") as f:
 
-        json.dump(output, f, indent=4, separators=(',', ': '))
+        json.dump(output, f, indent=2, separators=(',', ': '))
 
     others_log = log_file_directory + 'others_and_parameters.json'
 
     with open(others_log, 'w') as f:
 
-        json.dump(log_file, f, indent=4)
+        json.dump(log_file, f, indent=2)
 
     return output

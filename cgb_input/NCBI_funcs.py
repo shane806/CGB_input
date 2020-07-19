@@ -2,6 +2,7 @@ from Bio import Entrez, SeqIO
 from Bio.Blast import NCBIWWW, NCBIXML
 import time, json
 
+
 def try_efetch(database, identifier, ret_mode, sleepy, ret_type='text'):
     """
     Simple function to query entrez database, and safeguard against
@@ -63,6 +64,7 @@ def try_read_and_efetch(database, identifier, ret_type, sleepy,
                 return None
 
     return record
+
 
 def try_read_and_esearch(database, term_val, ID_type, sleepy):
     """
@@ -153,6 +155,7 @@ def try_qblastp(db, seq, e_val, nhits, sleepy, tax_id=None):
 
     return blast_records
 
+
 def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy, log_dir):
     log_file = {}
     """
@@ -208,13 +211,11 @@ def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy, 
 
                 else:
 
-                    log_file[record.hit_id.split('|')[-2]] = 'hit failed'\
+                    log_file[record.hit_id.split('|')[-2]] = 'hit failed' \
                                                              ' coverage test'
 
             else:
 
                 orthologs.append(record.hit_id.split('|')[-2])
 
-
     return orthologs, log_file
-

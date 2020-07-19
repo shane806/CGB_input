@@ -1,5 +1,6 @@
 from Bio import Entrez, SeqIO, pairwise2
-import time
+import time, json
+
 
 def genome_record_to_seq(grecord, upstream, downstream, sleepy):
     """Gets a genome record consisting of accession, start position and strand.
@@ -38,14 +39,14 @@ def genome_record_to_seq(grecord, upstream, downstream, sleepy):
             print 'NCBI exception raised. Reattempt iteration: ' + str(cnt + 1)
 
             if cnt == 4:
-                
                 print 'Could not download record after 5 attempts'
-    
+
                 return None
-    
+
     gnome_record = SeqIO.read(net_handle, "fasta")
 
     return gnome_record
+
 
 ######################################################################
 def id_below_maxid_perc(el1, el2, max_percent_id):
@@ -57,10 +58,10 @@ def id_below_maxid_perc(el1, el2, max_percent_id):
     al = pairwise2.align.globalms(el1.seq, el2.seq, 2, 0, -2, -.5, \
                                   one_alignment_only=True, \
                                   penalize_end_gaps=False)
-    
+
     matches = 0
     gapless = 0
-    
+
     # for each position in the alignment
     for ch_pair in zip(al[0][0], al[0][1]):
 
@@ -71,11 +72,10 @@ def id_below_maxid_perc(el1, el2, max_percent_id):
 
             # if it's a match, count it
             if ch_pair[0] == ch_pair[1]:
-                
                 matches = matches + 1
 
     perID = (float(matches) / float(gapless))
-    
+
     # return true or false depending on percent identity
     if perID <= float(max_percent_id):
 
@@ -107,7 +107,6 @@ def identity_filter_list(orthos, percent_id):
     cnt = 0
 
     while cnt < len(item_list):
-        
         # get next first element in upstream seq list, removing it from list
         current_item = item_list.pop(0)
 
@@ -130,16 +129,16 @@ def identity_filter_list(orthos, percent_id):
 
     return filt_orthos
 
+
 ########################################################################
-def maxID_filt(maxID, prefilt_orthologs, up_region, dw_region, sleepy):
+def maxID_filt(maxID, prefilt_orthologs, up_region, dw_region, sleepy, log_dir):
     print 'Obtaining upstream nucleotide sequences for homologs'
 
     for ortholog in prefilt_orthologs:
-        
-        print '/n|-> Grabbing upstream nucleotide sequence for: ' + ortholog
+        print '\n|-> Grabbing upstream nucleotide sequence for: ' + ortholog
 
         # grab the sequence corresponding to that record
-        seq = genome_record_to_seq(prefilt_orthologs[ortholog]['nuc_record'], \
+        seq = genome_record_to_seq(prefilt_orthologs[ortholog]['nuc_record'],
                                    up_region, dw_region, sleepy)
 
         prefilt_orthologs[ortholog]['promoter'] = seq
@@ -147,5 +146,17 @@ def maxID_filt(maxID, prefilt_orthologs, up_region, dw_region, sleepy):
     # filter the list of upstream sequences
     filtered_orthologs = identity_filter_list(prefilt_orthologs, maxID)
 
+    maxID_filtered_dir = log_dir + 'maxID_filtered_orthologs.json'
+
+    maxID_filtered_serializable = filtered_orthologs
+
+    for ortholog in filtered_orthologs:
+
+        del maxID_filtered_serializable[ortholog]['promoter']
+
+
+    with open(maxID_filtered_dir, 'w') as f:
+
+        json.dump(filtered_orthologs, f, indent=4)
+
     return filtered_orthologs
-    

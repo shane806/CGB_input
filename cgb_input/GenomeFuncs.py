@@ -2,6 +2,7 @@ from Bio import Entrez
 from NCBI_funcs import try_read_and_efetch, try_read_and_esearch
 import json
 
+
 def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
     """Takes a protein accession as an input. Retrieves its IPG record.
         The idea here is to obtain, prioritarily, data from complete genome
@@ -14,14 +15,13 @@ def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
         identified below).
     """
     log_file = {}
-    
+
     # genome_ret_dir = log_dir + 'genome_record_retrieval.json'
-    
+
     # Attempt to download the ortholog's IPG record
     records = try_read_and_efetch('protein', ortholog_acc, 'ipg', sleepy, 'xml')
 
     if not records:
-        
         # log_file[ortholog_acc] = 'genome retrieval: efetch of IPG record failed'
 
         return None
@@ -173,7 +173,6 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
     refseq = 0
 
     if '_' in nuc_record_acc:
-    
         refseq = 1
     # for complete genome records, search other chromosomes or plasmids.
     # This can be performed retrieving the Assembly database  accession and
@@ -186,10 +185,9 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
                                   ret_mode='xml')
 
     if not nuc_rec:
-
         log_file[nuc_record_acc] = "initial nucleotide record couldn't be " \
                                    "retrieved by efetch"
-                        
+
         return None
 
     sp_name = prettyeze_spname(nuc_rec[0]['GBSeq_organism'])
@@ -201,7 +199,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
     # not in nuc_rec, or the search yields zero results, we just use the
     # record obtained in genome_record_retrieval
     if nuc_record_score >= 6:
-        
+
         Assembly_found = False
         BioSample_found = False
         BioProject_found = False
@@ -209,12 +207,12 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
         for element in nuc_rec[0]["GBSeq_xrefs"]:
 
             if element["GBXref_dbname"] == "Assembly":
-            
+
                 Assembly_found = True
-                
+
                 Assembly = element['GBXref_id'] + "[Assembly]"
-            
-            elif  element["GBXref_dbname"] == "BioSample":
+
+            elif element["GBXref_dbname"] == "BioSample":
 
                 BioSample_found = True
 
@@ -229,7 +227,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
         # in case more genome records exist. e.g. plasmids not associated with
         # the complete circular chromosome
-        
+
         if Assembly_found:
 
             Id_List = try_read_and_esearch(database='nucleotide',
@@ -268,25 +266,25 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
 
                     else:
 
-                        print '***Attempt to get all genomes for ' +\
-                               nuc_record_acc + ' proved unsuccessful; Ortholog will be'\
-                                   ' discarded'
-    
+                        print '***Attempt to get all genomes for ' + \
+                              nuc_record_acc + ' proved unsuccessful; Ortholog will be' \
+                                               ' discarded'
+
                         return sp_name, None
 
             else:
 
-                print '***Attempt to get all genomes for ' +\
-                       nuc_record_acc + ' proved unsuccessful; Ortholog will be'\
-                           ' discarded'
+                print '***Attempt to get all genomes for ' + \
+                      nuc_record_acc + ' proved unsuccessful; Ortholog will be' \
+                                       ' discarded'
 
                 return sp_name, None
 
         else:
 
-            print '***Attempt to get all genomes for ' +\
-                   nuc_record_acc + ' proved unsuccessful; Ortholog will be'\
-                       ' discarded'
+            print '***Attempt to get all genomes for ' + \
+                  nuc_record_acc + ' proved unsuccessful; Ortholog will be' \
+                                   ' discarded'
 
             return sp_name, None
 
@@ -488,6 +486,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
             # return name, accession, as None [to discard it]
             return sp_name, None
 
+
 ######################################################################
 
 def create_master(acc):
@@ -528,6 +527,7 @@ def create_master(acc):
 
     return master
 
+
 ######################################################################
 
 def split_accession(acc):
@@ -547,7 +547,7 @@ def split_accession(acc):
             prefix = prefix + c
 
     suffix = acc[len(prefix):len(acc)]
-    
+
     return [prefix, suffix]
 
 

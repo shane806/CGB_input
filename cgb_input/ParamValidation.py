@@ -71,7 +71,7 @@ def input_check(inputfile_name):
     try:
 
         with open(inputfile_name, 'r') as path:
-            
+
             in_file = json.load(path)
 
     # If unsuccessful, grab the raised exception and initialize in new variable
@@ -297,7 +297,7 @@ def input_check(inputfile_name):
                 return None
 
         # if user wants default
-        elif IGPs['BLAST_dbase'] == None:
+        elif not IGPs['BLAST_dbase']:
 
             BLAST_dbase_checked = 'nr'  # default
 
@@ -346,7 +346,7 @@ def input_check(inputfile_name):
                       ' Update the value for max_hits to a whole number between 1 and 1000.'
                 return None
 
-        elif nhits == None:
+        elif not nhits:
 
             nhits_checked = 50
 
@@ -374,7 +374,7 @@ def input_check(inputfile_name):
 
     if 'selected_taxon' in IGPs:
 
-        if IGPs['selected_taxon'] == None:
+        if not IGPs['selected_taxon']:
 
             selected_taxon_checked = None  # default
 
@@ -423,7 +423,7 @@ def input_check(inputfile_name):
         selected_taxon_checked = None  # default
 
     IGPs_checked['selected_taxon'] = selected_taxon_checked
-    
+
     # if ID_filter was set to True but None given for maxID, set to default
     if 'maxID' in IGPs:
 
@@ -502,7 +502,7 @@ def input_check(inputfile_name):
                 return None
 
         # if up_region set to None, validate it as default
-        elif IGPs['up_region'] == None:
+        elif not IGPs['up_region']:
             print "\n -up_region parameter set to null in your JSON."
             print "\n -Setting parameter to default: 250"
             up_region_checked = 250
@@ -526,9 +526,9 @@ def input_check(inputfile_name):
 
             # if dw_region between 10 and 100, validate it, otherwise, return None
             if dw_region >= 0 and dw_region <= 100:
-                
+
                 dw_region_checked = dw_region
-                
+
                 print "\n -Number of bases to check in the downstream region: ", \
                     dw_region_checked
 
@@ -540,7 +540,7 @@ def input_check(inputfile_name):
                 return None
 
         # if dw_region set to None, validate as default
-        elif IGPs['dw_region'] == None:
+        elif not IGPs['dw_region']:
             print "\n -dw_region parameter in your JSON file set to null."
             print "\n -Setting parameter to default: 25"
             dw_region_checked = 25
@@ -602,7 +602,7 @@ def input_check(inputfile_name):
                       " specified by taxonomic identifier: ", tax_ID_checked
 
         # if tax_ID set to None, validate the default
-        elif IGPs['tax_ID'] == None:
+        elif not IGPs['tax_ID']:
             tax_ID_checked = None
 
             print "\n -The tax_ID parameter set to null in your JSON file."
@@ -650,7 +650,7 @@ def input_check(inputfile_name):
 
                 return None
         # if min_cover set to None, validate the default
-        elif IGPs['min_cover'] == None:
+        elif not IGPs['min_cover']:
 
             min_cover_checked = 0.75
 
@@ -696,7 +696,7 @@ def input_check(inputfile_name):
                 return None
 
         # if sleepy set to None, validate the default
-        elif IGPs['sleepy'] == None:
+        elif not IGPs['sleepy']:
             sleepy_checked = 0.5  # default
             print "\n -The sleepy parameter in your JSON file set to null."
             print "\n -Setting parameter to default: 0.5 seconds"
@@ -734,18 +734,18 @@ def input_check(inputfile_name):
         else:
 
             print "\nThe 'TF_family' parameter reflects a name for the TF to be " \
-                  "analyzed. Given the absence of a user provided parameter, "\
+                  "analyzed. Given the absence of a user provided parameter, " \
                   "The default,'None', will be used"
-        
+
             TF_family_checked = None
 
 
     else:
 
         print "\nThe 'TF_family' parameter reflects a name for the TF to be " \
-              "analyzed. Given the absence of a user provided parameter, "\
+              "analyzed. Given the absence of a user provided parameter, " \
               "The default,'None', will be used"
-        
+
         TF_family_checked = None
 
     print "\n -TF family: " + TF_family_checked
@@ -802,7 +802,6 @@ def input_check(inputfile_name):
     TF_accessions = []
 
     for acc in in_file['motifs']:
-        
         TF_accessions.append(acc['protein_accession'])
 
     IGPs_checked['TF_accessions'] = TF_accessions

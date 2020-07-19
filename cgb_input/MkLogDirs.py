@@ -1,7 +1,7 @@
 import os
 
+
 def make_log_directories(TF_family):
-    
     curr_dir_list = os.listdir(os.getcwd())
 
     if 'log_files' not in curr_dir_list:
@@ -21,17 +21,15 @@ def make_log_directories(TF_family):
         os.mkdir(main_log_directory + TF_log_dir)
 
     log_file_directory = main_log_directory + TF_log_dir + '/'
-    
+
     if 'output_files' not in curr_dir_list:
-        
+
         output_dir = os.getcwd() + "/output_files/"
-        
+
         os.mkdir(output_dir)
-        
+
     else:
-        
+
         output_dir = os.getcwd() + '/output_files/'
-        
+
     return log_file_directory, output_dir
-
-
