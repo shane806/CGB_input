@@ -29,7 +29,7 @@ Upon completion of a successful input file generation, the resulting JSON file w
 ### TASK 1:
 * Using the provided Transcription Factor (TF) protein accession numbers , the CGB_input program performs a BLASTP search for each TF, limited by e-value and (optionally) by a taxonomic organism ID. (See input_test.md for details)
 
-* If no taxonomic ID is specified, BLAST hits will be obtained up to a maximum specified e-value (1e-10 by default). If, however,  a taxonomic ID is specified, the BLASTP search will be constrained to that taxon (e.g. class, order...) well as by the specified e-value.
+* If no taxonomic ID is specified, BLASTP hits will be obtained up to a maximum specified e-value (1e-10 by default). If, however,  a taxonomic ID is specified, the BLASTP search will be constrained to that taxon (e.g. class, order...) well as by the specified e-value.
 
 * Identified HSPs from BLASTP searches are consolidated into a list of unique hits, relative to each other, and to the TFs under study.
 
