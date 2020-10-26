@@ -34,15 +34,13 @@ def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
 
     # and the list of refseq . numbers:
     # https://www.ncbi.nlm.nih.gov/books/NBK21091/table/ch18.T.refseq_numbers_and_mole/?report=objectonly
-    priority = {'NC_': 7, 'AC_': 7, "AE": 6, "CP": 6, "CY": 6, "NZ_": 5, \
-                "NT_": 5, "NW_": 5, "U": 3, "AF": 3, "AY": 3, "DQ": 3, \
-                'EF': 3, ' EU': 3, 'FJ': 3, 'GQ': 3, 'GU': 3, \
-                'HM': 3, 'HQ': 3, 'JF': 3, 'JN': 3, 'JQ': 3, \
-                'JX': 3, 'KC': 3, 'KF': 3, ' KJ': 3, 'KM': 3, 'KP': 3, \
-                'KR': 3, ' KT': 3, 'JX': 3, 'KC': 3, 'KF': 3, ' KJ': 3, \
-                'KM': 3, 'KP': 3, 'KR': 3, ' KT': 3, 'KU': 3, 'KX': 3, \
-                'KY': 3, ' MF': 3, 'MG': 3, 'MH': 3, 'MK': 3, ' MN': 3, \
-                'MT': 3}
+    priority = {'NC_': 7, 'AC_': 7, "AE": 6, "CP": 6, "CY": 6, "NZ_": 5,
+                "NT_": 5, "NW_": 5, "U": 3, "AF": 3, "AY": 3, "DQ": 3,
+                'EF': 3, ' EU': 3, 'FJ': 3, 'GQ': 3, 'GU': 3,
+                'HM': 3, 'HQ': 3, 'JF': 3, 'JN': 3, 'JQ': 3,
+                'JX': 3, 'KC': 3, 'KF': 3, ' KJ': 3, 'KM': 3, 'KP': 3,
+                'KR': 3, ' KT': 3, 'KU': 3, 'KX': 3, 'KY': 3, ' MF': 3,
+                'MG': 3, 'MH': 3, 'MK': 3, ' MN': 3, 'MT': 3}
 
     # list to hold all genomes and dictionary that is eventually returned as
     # the 'best' option out of all genomes
@@ -128,7 +126,7 @@ def genome_record_retrieval(ortholog_acc, sleepy, log_dir):
     else:
 
         print str(ortholog_acc) + " has no  ProteinList feature in its " \
-                                  "IPGReport"
+                                 "IPGReport"
         log_file[ortholog_acc] = 'from genome_record_retrieval: no IPGReport'
 
         return None
@@ -424,6 +422,7 @@ def contig_accessions(nuc_record_acc, nuc_record_score, sleepy):
                             last = str(item["GBAltSeqData_items"][0] \
                                            ["GBAltSeqItem_last-accn"])
                         else:
+                            
                             first = str(item["GBAltSeqData_items"][0] \
                                             ["GBAltSeqItem_first-accn"])
 

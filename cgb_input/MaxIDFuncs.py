@@ -55,8 +55,8 @@ def id_below_maxid_perc(el1, el2, max_percent_id):
        Scoring: Match:+2, Mismatch:-1, GapO: -2, GapE: -0.2
     """
 
-    al = pairwise2.align.globalms(el1.seq, el2.seq, 2, 0, -2, -.5, \
-                                  one_alignment_only=True, \
+    al = pairwise2.align.globalms(el1.seq, el2.seq, 2, 0, -2, -.5,
+                                  one_alignment_only=True,
                                   penalize_end_gaps=False)
 
     matches = 0
@@ -153,7 +153,6 @@ def maxID_filt(maxID, prefilt_orthologs, up_region, dw_region, sleepy, log_dir):
     for ortholog in filtered_orthologs:
 
         del maxID_filtered_serializable[ortholog]['promoter']
-
 
     with open(maxID_filtered_dir, 'w') as f:
 

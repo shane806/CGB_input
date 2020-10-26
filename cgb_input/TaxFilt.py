@@ -54,6 +54,7 @@ def tax_filter(selected_taxon, orthologs, sleepy, log):
         if not record:
             # update tax_tax_log_file and continue to next ortholog
             tax_log_file[ortholog] = 'efetch of nucleotide record failed'
+
             continue
 
         # Downloading the nucleotide record is done for the purpose of retrieving
@@ -234,6 +235,7 @@ def tax_filter(selected_taxon, orthologs, sleepy, log):
             for ortholog in taxon_groups[group]:
 
                 if ortholog != final_selected:
+                    
                     tax_log_file[ortholog] = 'multiple complete genomes' \
                                              ' for ' + str(group) + '. First genome in list ' \
                                                                     'selected. This genome and others in ' \
@@ -292,6 +294,7 @@ def tax_filter(selected_taxon, orthologs, sleepy, log):
                                   + target_genome
 
                             continue
+                    
                     else:
 
                         print '\n|--> At least 10 WGS Efetch attempts failed' \

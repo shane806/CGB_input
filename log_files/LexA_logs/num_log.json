@@ -1,0 +1,15 @@
+{
+  "hits lost due to coverage filter in BLAST": 2,
+  "hits lost due to non-unique blast hit": 0,
+  "hits before processing": 748,
+  "orthologs removed in genome retrieval": 0,
+  "orthologs removed in contig accessions": 5,
+  "orthologs removed in genome retrieval or contig accessions (unclear)": 0,
+  "orthologs lost pre taxon filtering": 5,
+  "orthologs lost due to taxon filtering": 343,
+  "orthologs remaining after taxon filtering": 400,
+  "orthologs before maxID filtering": 400,
+  "orthologs removed by maxID filter": 185,
+  "orthologs remaining after maxID filter": 215,
+  "other": 0
+}

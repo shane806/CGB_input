@@ -129,6 +129,7 @@ def try_qblastp(db, seq, e_val, nhits, sleepy, tax_id=None):
 
                     return None
     else:
+        
         for cnt in range(5):
 
             try:
@@ -156,7 +157,8 @@ def try_qblastp(db, seq, e_val, nhits, sleepy, tax_id=None):
     return blast_records
 
 
-def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy, log_dir):
+def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy):
+
     log_file = {}
     """
     - Remote BLASTp search to detect orthologs.
@@ -179,6 +181,7 @@ def blast_search(TF_accession, dbase, cutoff, nhits, min_cover, tax_id, sleepy, 
     handle = try_efetch('protein', TF_accession, 'text', sleepy,
                         ret_type='fasta')
     if not handle:
+
         return None
 
     protrec = SeqIO.read(handle, "fasta")

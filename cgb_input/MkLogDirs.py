@@ -2,6 +2,7 @@ import os
 
 
 def make_log_directories(TF_family):
+
     curr_dir_list = os.listdir(os.getcwd())
 
     if 'log_files' not in curr_dir_list:
