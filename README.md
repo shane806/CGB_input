@@ -8,7 +8,7 @@ Upon completion of a successful input file generation, the resulting JSON file w
 ### Using The Input File Generator:
 * To use this software, you (the end user/researcher) should have a basic understanding of navigating your computer's directories from the command line/terminal.
 * It's generally recommended you run this command:
-  * `git clone https://github.com/ErillLab/CGB_input.git`
+  * `git clone https://github.com/shane806/CGB_input.git`
 * Running this command will download the entire repository and create a directory called `CGB_input` in your current working directory.
 * Then change your current working directory to this newly created directory:
   * `cd CGB_input`
